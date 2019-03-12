@@ -14,3 +14,49 @@ Apply transformations to and print visualizations of MIDI files.
 
 This software is written in Go.
 
+
+## Concept
+
+Transformations and visualizations are applied in a pipeline.
+A pipeline consists of a source, a transform and a visualization stage.
+
+The source stage consists of one or more individual sources, each of which
+is later processed independently of the other sources.
+The transform stage consists of one or more transformations, which are applied
+in the specified order **for every source**.
+The output stage consists of one or more visualizations, which are generated
+for every result.
+
+Consider an example of:
+ - three sources S1, S2, and S3
+ - two transformations T1 and T2
+ - and two visualizations V1 and V2
+
+This pipeline would be processed as follows:
+
+```
+                                              +------+
+                                         ,->  |  V1  |
++------+      +------+      +------+    /     +------+
+|  S1  |  ->  |  T1  |  ->  |  T2  |  -<
++------+      +------+      +------+    \     +------+
+                                         `->  |  V2  |
+                                              +------+
+
+                                              +------+
+                                         ,->  |  V1  |
++------+      +------+      +------+    /     +------+
+|  S2  |  ->  |  T1  |  ->  |  T2  |  -<
++------+      +------+      +------+    \     +------+
+                                         `->  |  V2  |
+                                              +------+
+
+                                              +------+
+                                         ,->  |  V1  |
++------+      +------+      +------+    /     +------+
+|  S3  |  ->  |  T1  |  ->  |  T2  |  -<
++------+      +------+      +------+    \     +------+
+                                         `->  |  V2  |
+                                              +------+
+```
+
