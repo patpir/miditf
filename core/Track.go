@@ -8,3 +8,7 @@ func NewTrack() *Track {
 	return new(Track)
 }
 
+func (t *Track) AddNote(note *Note) {
+	t.notes = append(t.notes, *note)
+}
+
