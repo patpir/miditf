@@ -18,12 +18,14 @@ type sourceType struct {
 }
 
 var registeredSources = make(map[string]sourceType)
+var registeredSourceDetails = []Details{}
 
 func RegisterSource(details Details, factory SourceFactory) {
 	registeredSources[details.Identifier()] = sourceType{
 		details: details,
 		factory: factory,
 	}
+	registeredSourceDetails = append(registeredSourceDetails, details)
 }
 
 func CreateSource(identifier string, argValues []string) (Source, error) {
@@ -32,5 +34,9 @@ func CreateSource(identifier string, argValues []string) (Source, error) {
 		return st.factory(argValues)
 	}
 	return nil, errors.New("Source type does not exist")
+}
+
+func Sources() []Details {
+	return registeredSourceDetails
 }
 
