@@ -1,15 +1,15 @@
 package blocks
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 
 func TestArgument(t *testing.T) {
 	arg := NewArgument("my-arg", "arg-description")
-	if arg.Name() != "my-arg" {
-		t.Fail()
-	}
-	if arg.Description() != "arg-description" {
-		t.Fail()
-	}
+	assert.Equal(t, "my-arg", arg.Name())
+	assert.Equal(t, "arg-description", arg.Description())
 }
 

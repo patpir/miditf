@@ -1,11 +1,13 @@
 package core
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestCreateTrack(t *testing.T) {
 	track := NewTrack()
-	if track == nil {
-		t.Fail()
-	}
+	assert.NotNil(t, track)
 }
 

@@ -1,11 +1,13 @@
 package core
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestCreateNote(t *testing.T) {
 	note := NewNote()
-	if note == nil {
-		t.Fail()
-	}
+	assert.NotNil(t, note)
 }
 

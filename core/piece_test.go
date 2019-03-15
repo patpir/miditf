@@ -1,11 +1,13 @@
 package core
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestCreatePiece(t *testing.T) {
 	piece := NewPiece()
-	if piece == nil {
-		t.Fail()
-	}
+	assert.NotNil(t, piece)
 }
 
