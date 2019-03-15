@@ -1,7 +1,7 @@
 package core
 
 type Track struct {
-	notes  []Note
+	notes  []*Note
 }
 
 func NewTrack() *Track {
@@ -9,6 +9,10 @@ func NewTrack() *Track {
 }
 
 func (t *Track) AddNote(note *Note) {
-	t.notes = append(t.notes, *note)
+	t.notes = append(t.notes, note)
+}
+
+func (t *Track) Notes() []*Note {
+	return t.notes
 }
 

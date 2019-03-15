@@ -13,3 +13,7 @@ func (p *Piece) AddTrack(track *Track) {
 	p.tracks = append(p.tracks, track)
 }
 
+func (p *Piece) Tracks() []*Track {
+	return p.tracks
+}
+
