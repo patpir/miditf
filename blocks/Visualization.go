@@ -10,7 +10,7 @@ type Visualization interface {
 	Visualize(piece *core.Piece) string
 }
 
-type VisualizationFactory func([]string) (Visualization, error)
+type VisualizationFactory func([]Argument) (Visualization, error)
 
 type visualizationType struct {
 	info    BlockInfo
@@ -28,7 +28,7 @@ func RegisterVisualization(info BlockInfo, factory VisualizationFactory) {
 	registeredVisualizationInfos = append(registeredVisualizationInfos, info)
 }
 
-func CreateVisualization(identifier string, argValues []string) (Visualization, error) {
+func CreateVisualization(identifier string, argValues []Argument) (Visualization, error) {
 	vt, ok := registeredVisualizations[identifier]
 	if ok {
 		return vt.factory(argValues)

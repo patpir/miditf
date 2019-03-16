@@ -6,13 +6,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func mockTransformationFactory(config []string) (Transformation, error) {
+func mockTransformationFactory(config []Argument) (Transformation, error) {
 	return nil, nil
 }
 
 
 func TestInvalidTransformationId(t *testing.T) {
-	tf, err := CreateTransformation("transformation does not exist", []string{})
+	tf, err := CreateTransformation("transformation does not exist", []Argument{})
 	assert.NotNil(t, err)
 	assert.Nil(t, tf)
 }

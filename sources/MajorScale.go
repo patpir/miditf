@@ -13,12 +13,12 @@ type majorScale struct {
 }
 
 
-func newMajorScale(config []string) (blocks.Source, error) {
+func newMajorScale(config []blocks.Argument) (blocks.Source, error) {
 	if len(config) != 1 {
 		return nil, errors.New("Invalid number of arguments")
 	}
 
-	baseTone, err := strconv.Atoi(config[0])
+	baseTone, err := strconv.Atoi(config[0].Value())
 	if err != nil {
 		return nil, err
 	}

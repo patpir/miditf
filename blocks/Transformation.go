@@ -10,7 +10,7 @@ type Transformation interface {
 	Transform(piece *core.Piece) *core.Piece
 }
 
-type TransformationFactory func([]string) (Transformation, error)
+type TransformationFactory func([]Argument) (Transformation, error)
 
 type transformationType struct {
 	info    BlockInfo
@@ -28,7 +28,7 @@ func RegisterTransformation(info BlockInfo, factory TransformationFactory) {
 	registeredTransformationInfos = append(registeredTransformationInfos, info)
 }
 
-func CreateTransformation(identifier string, argValues []string) (Transformation, error) {
+func CreateTransformation(identifier string, argValues []Argument) (Transformation, error) {
 	tt, ok := registeredTransformations[identifier]
 	if ok {
 		return tt.factory(argValues)

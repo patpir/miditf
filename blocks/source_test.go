@@ -6,13 +6,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func mockSourceFactory(config []string) (Source, error) {
+func mockSourceFactory(config []Argument) (Source, error) {
 	return nil, nil
 }
 
 
 func TestInvalidSourceId(t *testing.T) {
-	src, err := CreateSource("id does not exist", []string{})
+	src, err := CreateSource("id does not exist", []Argument{})
 	assert.NotNil(t, err)
 	assert.Nil(t, src)
 }

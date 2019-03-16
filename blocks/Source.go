@@ -10,7 +10,7 @@ type Source interface {
 	Piece() *core.Piece
 }
 
-type SourceFactory func([]string) (Source, error)
+type SourceFactory func([]Argument) (Source, error)
 
 type sourceType struct {
 	info     BlockInfo
@@ -28,7 +28,7 @@ func RegisterSource(info BlockInfo, factory SourceFactory) {
 	registeredSourceInfos = append(registeredSourceInfos, info)
 }
 
-func CreateSource(identifier string, argValues []string) (Source, error) {
+func CreateSource(identifier string, argValues []Argument) (Source, error) {
 	st, ok := registeredSources[identifier]
 	if ok {
 		return st.factory(argValues)
