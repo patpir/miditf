@@ -1,5 +1,5 @@
 
-.PHONY: all test verbose
+.PHONY: all test verbose coverage
 
 all: test
 
@@ -8,4 +8,7 @@ verbose:
 
 test:
 	go test ./...
+
+coverage:
+	go test --cover ./...
 
