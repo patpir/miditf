@@ -1,6 +1,6 @@
 # MIDITF
 
-Apply transformations to and print visualizations of MIDI files.
+Framework to apply transformations to and print visualizations of MIDI files.
 
 ## Features
 
@@ -13,6 +13,15 @@ Apply transformations to and print visualizations of MIDI files.
 ## Development
 
 This software is written in Go.
+
+The project is intended to be used as a framework for other projects.
+Therefore, compilation to an executable binary is not supported.
+
+Use one of the following commands to execute the unit tests:
+
+ - `make test` executes all tests and displays a summary for every package
+ - `make verbose` executes and displays details for every test
+ - `make coverage` executes all tests and displays coverage per package
 
 
 ## Concept
