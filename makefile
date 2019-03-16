@@ -12,3 +12,9 @@ test:
 coverage:
 	go test --cover ./...
 
+uncovered:
+	go test -coverprofile coverage.txt ./...
+	@echo
+	@echo "Not covered by tests:" 
+	@grep -E " 0$$" coverage.txt
+
