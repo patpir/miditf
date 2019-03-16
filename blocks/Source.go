@@ -13,19 +13,19 @@ type Source interface {
 type SourceFactory func([]string) (Source, error)
 
 type sourceType struct {
-	details  Details
+	info     BlockInfo
 	factory  SourceFactory
 }
 
 var registeredSources = make(map[string]sourceType)
-var registeredSourceDetails = []Details{}
+var registeredSourceInfos = []BlockInfo{}
 
-func RegisterSource(details Details, factory SourceFactory) {
-	registeredSources[details.Identifier()] = sourceType{
-		details: details,
+func RegisterSource(info BlockInfo, factory SourceFactory) {
+	registeredSources[info.Identifier()] = sourceType{
+		info:    info,
 		factory: factory,
 	}
-	registeredSourceDetails = append(registeredSourceDetails, details)
+	registeredSourceInfos = append(registeredSourceInfos, info)
 }
 
 func CreateSource(identifier string, argValues []string) (Source, error) {
@@ -36,7 +36,7 @@ func CreateSource(identifier string, argValues []string) (Source, error) {
 	return nil, errors.New("Source type does not exist")
 }
 
-func Sources() []Details {
-	return registeredSourceDetails
+func Sources() []BlockInfo {
+	return registeredSourceInfos
 }
 

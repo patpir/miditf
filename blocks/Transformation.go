@@ -13,19 +13,19 @@ type Transformation interface {
 type TransformationFactory func([]string) (Transformation, error)
 
 type transformationType struct {
-	details Details
+	info    BlockInfo
 	factory TransformationFactory
 }
 
 var registeredTransformations = make(map[string]transformationType)
-var registeredTransformationDetails = []Details{}
+var registeredTransformationInfos = []BlockInfo{}
 
-func RegisterTransformation(details Details, factory TransformationFactory) {
-	registeredTransformations[details.Identifier()] = transformationType{
-		details: details,
+func RegisterTransformation(info BlockInfo, factory TransformationFactory) {
+	registeredTransformations[info.Identifier()] = transformationType{
+		info:    info,
 		factory: factory,
 	}
-	registeredTransformationDetails = append(registeredTransformationDetails, details)
+	registeredTransformationInfos = append(registeredTransformationInfos, info)
 }
 
 func CreateTransformation(identifier string, argValues []string) (Transformation, error) {
@@ -36,7 +36,7 @@ func CreateTransformation(identifier string, argValues []string) (Transformation
 	return nil, errors.New("Transformation type does not exist")
 }
 
-func Transformations() []Details {
-	return registeredTransformationDetails
+func Transformations() []BlockInfo {
+	return registeredTransformationInfos
 }
 

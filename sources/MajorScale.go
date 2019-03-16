@@ -51,10 +51,10 @@ func (scale *majorScale) Piece() *core.Piece {
 }
 
 func init() {
-	arguments := []blocks.Argument{
-		blocks.NewArgument("base-tone", "Tone at which the major scale starts - this is the lowest tone of the scale"),
+	arguments := []blocks.ArgumentInfo{
+		blocks.NewArgumentInfo("base-tone", "Tone at which the major scale starts - this is the lowest tone of the scale"),
 	}
-	details := blocks.NewDetails("major-scale", "Creates a major scale", arguments)
-	blocks.RegisterSource(details, newMajorScale)
+	info := blocks.NewBlockInfo("major-scale", "Creates a major scale", arguments)
+	blocks.RegisterSource(info, newMajorScale)
 }
 

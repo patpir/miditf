@@ -18,8 +18,8 @@ func TestInvalidVisualizationId(t *testing.T) {
 }
 
 func TestListVisualizations(t *testing.T) {
-	details := Details{ identifier: "test-visu", description: "Test Visualization", arguments: []Argument{} }
-	RegisterVisualization(details, mockVisualizationFactory)
+	info := BlockInfo{ identifier: "test-visu", description: "Test Visualization", argumentInfos: []ArgumentInfo{} }
+	RegisterVisualization(info, mockVisualizationFactory)
 	visualizations := Visualizations()
 
 	assert.Equal(t, 1, len(visualizations))

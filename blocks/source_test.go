@@ -18,8 +18,8 @@ func TestInvalidSourceId(t *testing.T) {
 }
 
 func TestListSources(t *testing.T) {
-	details := Details{ identifier: "test-source", description: "Test Source", arguments: []Argument{} }
-	RegisterSource(details, mockSourceFactory)
+	info := BlockInfo{ identifier: "test-source", description: "Test Source", argumentInfos: []ArgumentInfo{} }
+	RegisterSource(info, mockSourceFactory)
 	sources := Sources()
 
 	assert.Equal(t, 1, len(sources))

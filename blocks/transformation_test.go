@@ -18,8 +18,8 @@ func TestInvalidTransformationId(t *testing.T) {
 }
 
 func TestListTransformations(t *testing.T) {
-	details := Details{ identifier: "test-tf", description: "Test Transformation", arguments: []Argument{} }
-	RegisterTransformation(details, mockTransformationFactory)
+	info := BlockInfo{ identifier: "test-tf", description: "Test Transformation", argumentInfos: []ArgumentInfo{} }
+	RegisterTransformation(info, mockTransformationFactory)
 	transformations := Transformations()
 
 	assert.Equal(t, 1, len(transformations))

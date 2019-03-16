@@ -1,15 +1,15 @@
 package blocks
 
 type Argument struct {
-	name         string
-	description  string
+	name   string
+	value  string
 }
 
 
-func NewArgument(name string, description string) Argument {
+func NewArgument(name string, value string) Argument {
 	return Argument {
-		name:         name,
-		description:  description,
+		name:   name,
+		value:  value,
 	}
 }
 
@@ -18,7 +18,7 @@ func (arg *Argument) Name() string {
 	return arg.name
 }
 
-func (arg *Argument) Description() string {
-	return arg.description
+func (arg *Argument) Value() string {
+	return arg.value
 }
 

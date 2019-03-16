@@ -13,19 +13,19 @@ type Visualization interface {
 type VisualizationFactory func([]string) (Visualization, error)
 
 type visualizationType struct {
-	details Details
+	info    BlockInfo
 	factory VisualizationFactory
 }
 
 var registeredVisualizations = make(map[string]visualizationType)
-var registeredVisualizationDetails = []Details{}
+var registeredVisualizationInfos = []BlockInfo{}
 
-func RegisterVisualization(details Details, factory VisualizationFactory) {
-	registeredVisualizations[details.Identifier()] = visualizationType{
-		details: details,
+func RegisterVisualization(info BlockInfo, factory VisualizationFactory) {
+	registeredVisualizations[info.Identifier()] = visualizationType{
+		info:    info,
 		factory: factory,
 	}
-	registeredVisualizationDetails = append(registeredVisualizationDetails, details)
+	registeredVisualizationInfos = append(registeredVisualizationInfos, info)
 }
 
 func CreateVisualization(identifier string, argValues []string) (Visualization, error) {
@@ -36,7 +36,7 @@ func CreateVisualization(identifier string, argValues []string) (Visualization, 
 	return nil, errors.New("Visualization type does not exist")
 }
 
-func Visualizations() []Details {
-	return registeredVisualizationDetails
+func Visualizations() []BlockInfo {
+	return registeredVisualizationInfos
 }
 
