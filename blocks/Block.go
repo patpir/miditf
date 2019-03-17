@@ -1,6 +1,12 @@
 package blocks
 
-type Block struct {
+type Block interface {
+	TypeId()     string
+	Comment()    string
+	Arguments()  []Argument
+}
+
+type block struct {
 	typeId     string
 	comment    string
 	arguments  []Argument
@@ -8,7 +14,7 @@ type Block struct {
 
 
 func NewBlock(typeId string, comment string, arguments []Argument) Block {
-	return Block {
+	return &block {
 		typeId:     typeId,
 		comment:    comment,
 		arguments:  arguments,
@@ -16,15 +22,15 @@ func NewBlock(typeId string, comment string, arguments []Argument) Block {
 }
 
 
-func (b *Block) TypeId() string {
+func (b *block) TypeId() string {
 	return b.typeId
 }
 
-func (b *Block) Comment() string {
+func (b *block) Comment() string {
 	return b.comment
 }
 
-func (b *Block) Arguments() []Argument {
+func (b *block) Arguments() []Argument {
 	return b.arguments
 }
 
