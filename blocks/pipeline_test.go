@@ -159,6 +159,31 @@ func TestPerformSuccessMulti(t *testing.T) {
 	assert.Equal(t, 4, count)
 }
 
+func TestPerformWithoutTransform(t *testing.T) {
+	registrator := mockRegistrator()
+	pipeline := createPipeline(
+		registrator,
+		[]string{ "empty", },
+		[]string{},
+		[]string{ "list-notes", },
+		[]int{},
+	)
+
+	ch := make(chan PipelineResult, 1)
+	pipeline.Perform(ch)
+	close(ch)
+	count := 0
+	for result := range ch {
+		count += 1
+		assert.NotNil(t, result.source)
+		assert.Equal(t, 0, len(result.transformations))
+		assert.NotNil(t, result.visualization)
+		assert.Equal(t, "Track  0:\n", result.output)
+		assert.Nil(t, result.err)
+	}
+	assert.Equal(t, 1, count)
+}
+
 func TestPerformUnknownSingleSource(t *testing.T) {
 	registrator := mockRegistrator()
 	pipeline := createPipeline(
