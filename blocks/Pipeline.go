@@ -73,7 +73,7 @@ func (p *Pipeline) Perform(c chan PipelineResult) {
 					wg.Add(1)
 					go func(visualization Block) {
 						defer wg.Done()
-						c <- visualizeTransformationResult(p.creator, transformed, v)
+						c <- visualizeTransformationResult(p.creator, transformed, visualization)
 					}(v)
 				}
 			}
