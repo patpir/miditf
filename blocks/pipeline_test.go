@@ -2,6 +2,7 @@ package blocks
 
 import (
 	"testing"
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -43,16 +44,16 @@ func TestVisualizations(t *testing.T) {
 
 
 type emptyTrackSource struct { }
-func (s *emptyTrackSource) Piece() *core.Piece {
+func (s *emptyTrackSource) Piece() (*core.Piece, error) {
 	p := core.NewPiece()
 	p.AddTrack(core.NewTrack())
-	return p
+	return p, nil
 }
 
 type noteAppender struct {
 	key uint8
 }
-func (appender *noteAppender) Transform(piece *core.Piece) *core.Piece {
+func (appender *noteAppender) Transform(piece *core.Piece) (*core.Piece, error) {
 	notes := piece.Tracks()[0].Notes()
 	var startTime uint32 = 0
 	if len(notes) > 0 {
@@ -60,11 +61,11 @@ func (appender *noteAppender) Transform(piece *core.Piece) *core.Piece {
 	}
 	note := core.NewNote(0, appender.key, 80, startTime, startTime + 15)
 	piece.Tracks()[0].AddNote(note)
-	return piece
+	return piece, nil
 }
 
 type noteLister struct { }
-func (lister *noteLister) Visualize(piece *core.Piece) string {
+func (lister *noteLister) Visualize(piece *core.Piece) (string, error) {
 	result := ""
 	tracks := piece.Tracks()
 	for i, track := range tracks {
@@ -75,11 +76,23 @@ func (lister *noteLister) Visualize(piece *core.Piece) string {
 		}
 		result += "\n"
 	}
-	return result
+	return result, nil
+}
+
+type produceError struct { }
+func (e *produceError) Piece() (*core.Piece, error) {
+	return nil, errors.New("Source Error")
+}
+func (e *produceError) Transform(piece *core.Piece) (*core.Piece, error) {
+	return nil, errors.New("Transform Error")
+}
+func (e *produceError) Visualize(piece *core.Piece) (string, error) {
+	return "", errors.New("Visu Error")
 }
 
 func mockRegistrator() Registrator {
 	r := NewRegistrator()
+
 	r.RegisterSource(NewBlockInfo("empty", "Empty source", []ArgumentInfo{}), func(arguments []Argument) (Source, error) {
 		return &emptyTrackSource{}, nil
 	})
@@ -90,34 +103,33 @@ func mockRegistrator() Registrator {
 	r.RegisterVisualization(NewBlockInfo("list-notes", "List all notes", []ArgumentInfo{}), func(arguments []Argument) (Visualization, error) {
 		return &noteLister{}, nil
 	})
+
+	r.RegisterSource(NewBlockInfo("error", "Error", []ArgumentInfo{}), func(arguments []Argument) (Source, error) {
+		return &produceError{}, nil
+	})
+	r.RegisterTransformation(NewBlockInfo("error", "Error", []ArgumentInfo{}), func(arguments []Argument) (Transformation, error) {
+		return &produceError{}, nil
+	})
+	r.RegisterVisualization(NewBlockInfo("error", "Error", []ArgumentInfo{}), func(arguments []Argument) (Visualization, error) {
+		return &produceError{}, nil
+	})
+
 	return r
 }
 
-func createPipeline(creator Creator, sourceErrors []bool, transformErrors []bool, visuErrors []bool, keys []int) *Pipeline {
+func createPipeline(creator Creator, sources []string, transformations []string, visualizations []string, keys []int) *Pipeline {
 	p := NewPipeline()
 	p.creator = creator
-	for si, sourceError := range sourceErrors {
-		if sourceError {
-			p.AddSource(NewBlock("source-error", fmt.Sprintf("start %d", si), []Argument{}))
-		} else {
-			p.AddSource(NewBlock("empty", fmt.Sprintf("start %d", si), []Argument{}))
-		}
+	for si, source := range sources {
+		p.AddSource(NewBlock(source, fmt.Sprintf("start %d", si), []Argument{}))
 	}
-	for ti, transformError := range transformErrors {
-		if transformError {
-			p.AddTransformation(NewBlock("transform-error", fmt.Sprintf("transform %d", ti), []Argument{}))
-		} else {
-			p.AddTransformation(NewBlock("append-note", fmt.Sprintf("transform %d", ti), []Argument{
-				NewArgument("key", strconv.Itoa(keys[ti])),
-			}))
-		}
+	for ti, transformation := range transformations {
+		p.AddTransformation(NewBlock(transformation, fmt.Sprintf("transform %d", ti), []Argument{
+			NewArgument("key", strconv.Itoa(keys[ti])),
+		}))
 	}
-	for vi, visuError := range visuErrors {
-		if visuError {
-			p.AddVisualization(NewBlock("visu-error", fmt.Sprintf("visu %d", vi), []Argument{}))
-		} else {
-			p.AddVisualization(NewBlock("list-notes", fmt.Sprintf("visu %d", vi), []Argument{}))
-		}
+	for vi, visualization := range visualizations {
+		p.AddVisualization(NewBlock(visualization, fmt.Sprintf("visu %d", vi), []Argument{}))
 	}
 	return p
 }
@@ -126,9 +138,9 @@ func TestPerformSuccessMulti(t *testing.T) {
 	registrator := mockRegistrator()
 	pipeline := createPipeline(
 		registrator,
-		[]bool{ false, false, },
-		[]bool{ false, false, },
-		[]bool{ false, false, },
+		[]string{ "empty", "empty", },
+		[]string{ "append-note", "append-note", },
+		[]string{ "list-notes", "list-notes", },
 		[]int{ 60, 69, },
 	)
 
@@ -147,13 +159,13 @@ func TestPerformSuccessMulti(t *testing.T) {
 	assert.Equal(t, 4, count)
 }
 
-func TestPerformErrorSingleSource(t *testing.T) {
+func TestPerformUnknownSingleSource(t *testing.T) {
 	registrator := mockRegistrator()
 	pipeline := createPipeline(
 		registrator,
-		[]bool{ true, },
-		[]bool{ false, },
-		[]bool{ false, },
+		[]string{ "unknown", },
+		[]string{ "append-note", },
+		[]string{ "list-notes", },
 		[]int{ 60, },
 	)
 
@@ -172,38 +184,13 @@ func TestPerformErrorSingleSource(t *testing.T) {
 	assert.Equal(t, 1, count)
 }
 
-func TestPerformErrorFirstTransform(t *testing.T) {
+func TestPerformUnknownFirstSource(t *testing.T) {
 	registrator := mockRegistrator()
 	pipeline := createPipeline(
 		registrator,
-		[]bool{ false, false, },
-		[]bool{ true, false, },
-		[]bool{ false, false, },
-		[]int{ 60, 69, },
-	)
-
-	ch := make(chan PipelineResult, 2)
-	pipeline.Perform(ch)
-	close(ch)
-	count := 0
-	for result := range ch {
-		count += 1
-		assert.NotNil(t, result.source)
-		assert.Equal(t, 1, len(result.transformations))
-		assert.NotNil(t, result.err)
-		assert.Nil(t, result.visualization)
-		assert.Equal(t, "", result.output)
-	}
-	assert.Equal(t, 2, count)
-}
-
-func TestPerformErrorFirstSource(t *testing.T) {
-	registrator := mockRegistrator()
-	pipeline := createPipeline(
-		registrator,
-		[]bool{ true, false, },
-		[]bool{ false, false, },
-		[]bool{ false, false, },
+		[]string{ "unknown", "empty", },
+		[]string{ "append-note", "append-note", },
+		[]string{ "list-notes", "list-notes", },
 		[]int{ 60, 69, },
 	)
 
@@ -233,16 +220,142 @@ func TestPerformErrorFirstSource(t *testing.T) {
 	assert.Equal(t, 3, count)
 }
 
-func TestPerformErrorFirstVisu(t *testing.T) {
+func TestPerformUnknownFirstTransform(t *testing.T) {
+	registrator := mockRegistrator()
+	pipeline := createPipeline(
+		registrator,
+		[]string{ "empty", "empty", },
+		[]string{ "unknown", "append-note", },
+		[]string{ "list-notes", "list-notes", },
+		[]int{ 60, 69, },
+	)
+
+	ch := make(chan PipelineResult, 2)
+	pipeline.Perform(ch)
+	close(ch)
+	count := 0
+	for result := range ch {
+		count += 1
+		assert.NotNil(t, result.source)
+		assert.Equal(t, 1, len(result.transformations))
+		assert.NotNil(t, result.err)
+		assert.Nil(t, result.visualization)
+		assert.Equal(t, "", result.output)
+	}
+	assert.Equal(t, 2, count)
+}
+
+func TestPerformUnknownFirstVisu(t *testing.T) {
 	registrator := mockRegistrator()
 	visu, err := registrator.CreateVisualization("visu-error", []Argument{})
 	assert.Nil(t, visu)
 	assert.NotNil(t, err)
 	pipeline := createPipeline(
 		registrator,
-		[]bool{ false, false, },
-		[]bool{ false, false, },
-		[]bool{ true, false, },
+		[]string{ "empty", "empty", },
+		[]string{ "append-note", "append-note", },
+		[]string{ "unknown", "list-notes", },
+		[]int{ 60, 69, },
+	)
+
+	ch := make(chan PipelineResult, 4)
+	pipeline.Perform(ch)
+	close(ch)
+	count := 0
+	errorCount := 0
+	for result := range ch {
+		count += 1
+		if result.err != nil {
+			errorCount += 1
+			assert.NotNil(t, result.source)
+			assert.Equal(t, 2, len(result.transformations))
+			assert.NotNil(t, result.visualization)
+			assert.NotNil(t, result.err)
+			assert.Equal(t, "", result.output)
+		} else {
+			assert.NotNil(t, result.source)
+			assert.Equal(t, 2, len(result.transformations))
+			assert.NotNil(t, result.visualization)
+			assert.Equal(t, "Track  0: 60 69\n", result.output)
+			assert.Nil(t, result.err)
+		}
+	}
+	assert.Equal(t, 2, errorCount)
+	assert.Equal(t, 4, count)
+}
+
+
+func TestPerformErrorFirstSource(t *testing.T) {
+	registrator := mockRegistrator()
+	pipeline := createPipeline(
+		registrator,
+		[]string{ "error", "empty", },
+		[]string{ "append-note", "append-note", },
+		[]string{ "list-notes", "list-notes", },
+		[]int{ 60, 69, },
+	)
+
+	ch := make(chan PipelineResult, 3)
+	pipeline.Perform(ch)
+	close(ch)
+	count := 0
+	errorCount := 0
+	for result := range ch {
+		count += 1
+		if result.err != nil {
+			errorCount += 1
+			assert.NotNil(t, result.source)
+			assert.NotNil(t, result.err)
+			assert.Equal(t, 0, len(result.transformations))
+			assert.Nil(t, result.visualization)
+			assert.Equal(t, "", result.output)
+		} else {
+			assert.NotNil(t, result.source)
+			assert.Equal(t, 2, len(result.transformations))
+			assert.NotNil(t, result.visualization)
+			assert.Equal(t, "Track  0: 60 69\n", result.output)
+			assert.Nil(t, result.err)
+		}
+	}
+	assert.Equal(t, 1, errorCount)
+	assert.Equal(t, 3, count)
+}
+
+func TestPerformErrorFirstTransformation(t *testing.T) {
+	registrator := mockRegistrator()
+	pipeline := createPipeline(
+		registrator,
+		[]string{ "empty", "empty", },
+		[]string{ "error", "append-note", },
+		[]string{ "list-notes", "list-notes", },
+		[]int{ 60, 69, },
+	)
+
+	ch := make(chan PipelineResult, 2)
+	pipeline.Perform(ch)
+	close(ch)
+	count := 0
+	for result := range ch {
+		count += 1
+		assert.NotNil(t, result.source)
+		assert.Equal(t, 1, len(result.transformations))
+		assert.NotNil(t, result.err)
+		assert.Nil(t, result.visualization)
+		assert.Equal(t, "", result.output)
+	}
+	assert.Equal(t, 2, count)
+}
+
+func TestPerformErrorFirstVisualization(t *testing.T) {
+	registrator := mockRegistrator()
+	visu, err := registrator.CreateVisualization("visu-error", []Argument{})
+	assert.Nil(t, visu)
+	assert.NotNil(t, err)
+	pipeline := createPipeline(
+		registrator,
+		[]string{ "empty", "empty", },
+		[]string{ "append-note", "append-note", },
+		[]string{ "error", "list-notes", },
 		[]int{ 60, 69, },
 	)
 

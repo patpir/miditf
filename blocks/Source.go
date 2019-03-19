@@ -5,7 +5,7 @@ import (
 )
 
 type Source interface {
-	Piece() *core.Piece
+	Piece() (*core.Piece, error)
 }
 
 type SourceFactory func([]Argument) (Source, error)

@@ -5,7 +5,7 @@ import (
 )
 
 type Visualization interface {
-	Visualize(piece *core.Piece) string
+	Visualize(piece *core.Piece) (string, error)
 }
 
 type VisualizationFactory func([]Argument) (Visualization, error)

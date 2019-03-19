@@ -95,15 +95,21 @@ func transformSingleSource(creator Creator, source Block, transformations []Bloc
 		result.err = err
 		return result
 	} else {
-		result.piece = src.Piece()
-		for _, transformation := range transformations {
-			result.transformations = append(result.transformations, transformation)
-			transform, err := creator.CreateTransformation(transformation.TypeId(), transformation.Arguments())
-			if err != nil {
-				result.err = err
-				break
+		result.piece, result.err = src.Piece()
+		if result.err == nil {
+			for _, transformation := range transformations {
+				result.transformations = append(result.transformations, transformation)
+				transform, err := creator.CreateTransformation(transformation.TypeId(), transformation.Arguments())
+				if err != nil {
+					result.err = err
+					break
+				}
+				result.piece, err = transform.Transform(result.piece)
+				if err != nil {
+					result.err = err
+					break
+				}
 			}
-			result.piece = transform.Transform(result.piece)
 		}
 	}
 	return result
@@ -122,7 +128,7 @@ func visualizeTransformationResult(creator Creator, tfResult intermediateResult,
 	if err != nil {
 		result.err = err
 	} else {
-		result.output = visu.Visualize(tfResult.piece)
+		result.output, result.err = visu.Visualize(tfResult.piece)
 	}
 
 	return result

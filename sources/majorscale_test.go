@@ -26,7 +26,8 @@ func TestMajorScaleNotes(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, src)
 
-	piece := src.Piece()
+	piece, err := src.Piece()
+	assert.Nil(t, err)
 	assert.NotNil(t, piece)
 
 	tracks := piece.Tracks()

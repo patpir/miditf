@@ -5,7 +5,7 @@ import (
 )
 
 type Transformation interface {
-	Transform(piece *core.Piece) *core.Piece
+	Transform(piece *core.Piece) (*core.Piece, error)
 }
 
 type TransformationFactory func([]Argument) (Transformation, error)
