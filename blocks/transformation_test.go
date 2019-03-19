@@ -12,15 +12,17 @@ func mockTransformationFactory(config []Argument) (Transformation, error) {
 
 
 func TestInvalidTransformationId(t *testing.T) {
-	tf, err := CreateTransformation("transformation does not exist", []Argument{})
+	r := NewRegistrator()
+	tf, err := r.CreateTransformation("transformation does not exist", []Argument{})
 	assert.NotNil(t, err)
 	assert.Nil(t, tf)
 }
 
 func TestListTransformations(t *testing.T) {
+	r := NewRegistrator()
 	info := BlockInfo{ identifier: "test-tf", description: "Test Transformation", argumentInfos: []ArgumentInfo{} }
-	RegisterTransformation(info, mockTransformationFactory)
-	transformations := Transformations()
+	r.RegisterTransformation(info, mockTransformationFactory)
+	transformations := r.Transformations()
 
 	assert.Equal(t, 1, len(transformations))
 	assert.Equal(t, "test-tf", transformations[0].identifier)

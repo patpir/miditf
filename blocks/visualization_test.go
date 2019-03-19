@@ -12,15 +12,17 @@ func mockVisualizationFactory(config []Argument) (Visualization, error) {
 
 
 func TestInvalidVisualizationId(t *testing.T) {
-	visu, err := CreateVisualization("visualization does not exist", []Argument{})
+	r := NewRegistrator()
+	visu, err := r.CreateVisualization("visualization does not exist", []Argument{})
 	assert.NotNil(t, err)
 	assert.Nil(t, visu)
 }
 
 func TestListVisualizations(t *testing.T) {
+	r := NewRegistrator()
 	info := BlockInfo{ identifier: "test-visu", description: "Test Visualization", argumentInfos: []ArgumentInfo{} }
-	RegisterVisualization(info, mockVisualizationFactory)
-	visualizations := Visualizations()
+	r.RegisterVisualization(info, mockVisualizationFactory)
+	visualizations := r.Visualizations()
 
 	assert.Equal(t, 1, len(visualizations))
 	assert.Equal(t, "test-visu", visualizations[0].Identifier())

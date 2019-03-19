@@ -12,15 +12,17 @@ func mockSourceFactory(config []Argument) (Source, error) {
 
 
 func TestInvalidSourceId(t *testing.T) {
-	src, err := CreateSource("id does not exist", []Argument{})
+	r := NewRegistrator()
+	src, err := r.CreateSource("id does not exist", []Argument{})
 	assert.NotNil(t, err)
 	assert.Nil(t, src)
 }
 
 func TestListSources(t *testing.T) {
+	r := NewRegistrator()
 	info := BlockInfo{ identifier: "test-source", description: "Test Source", argumentInfos: []ArgumentInfo{} }
-	RegisterSource(info, mockSourceFactory)
-	sources := Sources()
+	r.RegisterSource(info, mockSourceFactory)
+	sources := r.Sources()
 
 	assert.Equal(t, 1, len(sources))
 	assert.Equal(t, "test-source", sources[0].Identifier())

@@ -7,6 +7,7 @@ import (
 )
 
 type Pipeline struct {
+	creator         Creator
 	sources         []Block
 	transformations []Block
 	visualizations  []Block
@@ -56,7 +57,7 @@ func (p *Pipeline) Perform(c chan PipelineResult) {
 		wg.Add(1)
 		go func(source Block, transformations []Block) {
 			defer wg.Done()
-			transformed := transformSingleSource(source, transformations)
+			transformed := transformSingleSource(p.creator, source, transformations)
 
 			if transformed.err != nil {
 				result := PipelineResult{
@@ -72,7 +73,7 @@ func (p *Pipeline) Perform(c chan PipelineResult) {
 					wg.Add(1)
 					go func(visualization Block) {
 						defer wg.Done()
-						c <- visualizeTransformationResult(transformed, v)
+						c <- visualizeTransformationResult(p.creator, transformed, v)
 					}(v)
 				}
 			}
@@ -82,14 +83,14 @@ func (p *Pipeline) Perform(c chan PipelineResult) {
 }
 
 
-func transformSingleSource(source Block, transformations []Block) intermediateResult {
+func transformSingleSource(creator Creator, source Block, transformations []Block) intermediateResult {
 	result := intermediateResult{
 		source: source,
 		transformations: nil,
 		piece: nil,
 		err: nil,
 	}
-	src, err := CreateSource(source.TypeId(), source.Arguments())
+	src, err := creator.CreateSource(source.TypeId(), source.Arguments())
 	if err != nil {
 		result.err = err
 		return result
@@ -97,7 +98,7 @@ func transformSingleSource(source Block, transformations []Block) intermediateRe
 		result.piece = src.Piece()
 		for _, transformation := range transformations {
 			result.transformations = append(result.transformations, transformation)
-			transform, err := CreateTransformation(transformation.TypeId(), transformation.Arguments())
+			transform, err := creator.CreateTransformation(transformation.TypeId(), transformation.Arguments())
 			if err != nil {
 				result.err = err
 				break
@@ -108,7 +109,7 @@ func transformSingleSource(source Block, transformations []Block) intermediateRe
 	return result
 }
 
-func visualizeTransformationResult(tfResult intermediateResult, visualization Block) PipelineResult {
+func visualizeTransformationResult(creator Creator, tfResult intermediateResult, visualization Block) PipelineResult {
 	result := PipelineResult{
 		source: tfResult.source,
 		transformations: tfResult.transformations,
@@ -117,7 +118,7 @@ func visualizeTransformationResult(tfResult intermediateResult, visualization Bl
 		err: nil,
 	}
 
-	visu, err := CreateVisualization(visualization.TypeId(), visualization.Arguments())
+	visu, err := creator.CreateVisualization(visualization.TypeId(), visualization.Arguments())
 	if err != nil {
 		result.err = err
 	} else {
