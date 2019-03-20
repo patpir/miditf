@@ -22,7 +22,9 @@ type intermediateResult struct {
 
 
 func NewPipeline() *Pipeline {
-	return new(Pipeline)
+	pipeline := new(Pipeline)
+	pipeline.creator = DefaultRegistrator()
+	return pipeline
 }
 
 
