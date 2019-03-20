@@ -30,14 +30,14 @@ func newMajorScale(config []blocks.Argument) (blocks.Source, error) {
 
 func (scale *majorScale) Piece() (*core.Piece, error) {
 	notes := []*core.Note{
-		core.NewNote(0, scale.baseTone     , 80,   0,  15),
-		core.NewNote(0, scale.baseTone +  2, 80,  16,  31),
-		core.NewNote(0, scale.baseTone +  4, 80,  32,  47),
-		core.NewNote(0, scale.baseTone +  5, 80,  48,  63),
-		core.NewNote(0, scale.baseTone +  7, 80,  64,  79),
-		core.NewNote(0, scale.baseTone +  9, 80,  80,  95),
-		core.NewNote(0, scale.baseTone + 11, 80,  96, 111),
-		core.NewNote(0, scale.baseTone + 12, 80, 112, 127),
+		core.NewNote(0, scale.baseTone     , 80,   0,  16),
+		core.NewNote(0, scale.baseTone +  2, 80,  16,  32),
+		core.NewNote(0, scale.baseTone +  4, 80,  32,  48),
+		core.NewNote(0, scale.baseTone +  5, 80,  48,  64),
+		core.NewNote(0, scale.baseTone +  7, 80,  64,  80),
+		core.NewNote(0, scale.baseTone +  9, 80,  80,  96),
+		core.NewNote(0, scale.baseTone + 11, 80,  96, 112),
+		core.NewNote(0, scale.baseTone + 12, 80, 112, 128),
 	}
 
 	track := core.NewTrack()

@@ -42,7 +42,7 @@ func TestMajorScaleNotes(t *testing.T) {
 	for index, note := range notes {
 		assert.Equal(t, uint8(keys[index]), note.Key())
 		assert.Equal(t, uint32(16 * index), note.StartTime())
-		assert.Equal(t, uint32(15), note.EndTime() - note.StartTime())
+		assert.Equal(t, uint32(16), note.EndTime() - note.StartTime())
 	}
 }
 
