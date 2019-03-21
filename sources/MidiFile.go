@@ -98,7 +98,7 @@ func (mfr *midiFileReader) Piece() (*core.Piece, error) {
 
 func init() {
 	arguments := []blocks.ArgumentInfo{
-		blocks.NewArgumentInfo("filename", "Path to a SMF/MIDI file"),
+		blocks.NewArgumentInfo("filename", "Path to a SMF/MIDI file", false),
 	}
 	info := blocks.NewBlockInfo("midi-file", "Reads a single MIDI file", arguments)
 	blocks.DefaultRegistrator().RegisterSource(info, newMidiFileReader)

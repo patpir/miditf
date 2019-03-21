@@ -8,8 +8,9 @@ import (
 
 
 func TestArgumentInfo(t *testing.T) {
-	arg := NewArgumentInfo("my-arg", "Arg Description")
+	arg := NewArgumentInfo("my-arg", "Arg Description", false)
 	assert.Equal(t, "my-arg", arg.Name())
 	assert.Equal(t, "Arg Description", arg.Description())
+	assert.False(t, arg.IsOptional())
 }
 

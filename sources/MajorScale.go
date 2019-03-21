@@ -52,7 +52,7 @@ func (scale *majorScale) Piece() (*core.Piece, error) {
 
 func init() {
 	arguments := []blocks.ArgumentInfo{
-		blocks.NewArgumentInfo("base-tone", "Tone at which the major scale starts - this is the lowest tone of the scale"),
+		blocks.NewArgumentInfo("base-tone", "Tone at which the major scale starts - this is the lowest tone of the scale", false),
 	}
 	info := blocks.NewBlockInfo("major-scale", "Creates a major scale", arguments)
 	blocks.DefaultRegistrator().RegisterSource(info, newMajorScale)
