@@ -12,7 +12,7 @@ import (
 
 
 func TestSources(t *testing.T) {
-	source := NewBlock("my-source", "Some source", []Argument{})
+	source := NewBlock("my-source", "Some source", make(map[string]interface{}))
 	pipeline := NewPipeline()
 	pipeline.AddSource(source)
 
@@ -22,7 +22,7 @@ func TestSources(t *testing.T) {
 }
 
 func TestTransformations(t *testing.T) {
-	transform := NewBlock("my-transform", "Some transformation", []Argument{})
+	transform := NewBlock("my-transform", "Some transformation", make(map[string]interface{}))
 	pipeline := NewPipeline()
 	pipeline.AddTransformation(transform)
 
@@ -32,7 +32,7 @@ func TestTransformations(t *testing.T) {
 }
 
 func TestVisualizations(t *testing.T) {
-	visu := NewBlock("my-visu", "Some visualization", []Argument{})
+	visu := NewBlock("my-visu", "Some visualization", make(map[string]interface{}))
 	pipeline := NewPipeline()
 	pipeline.AddVisualization(visu)
 
@@ -92,28 +92,28 @@ func (e *produceError) Visualize(piece *core.Piece) (string, error) {
 func mockRegistrator() Registrator {
 	r := NewRegistrator()
 
-	r.RegisterSource(NewBlockInfo("empty", "Empty source", []ArgumentInfo{}), func(arguments []Argument) (Source, error) {
+	r.RegisterSource(NewBlockInfo("empty", "Empty source", []ArgumentInfo{}), func(arguments map[string]interface{}) (Source, error) {
 		return &emptyTrackSource{}, nil
 	})
-	r.RegisterTransformation(NewBlockInfo("append-note", "Append a note", []ArgumentInfo{}), func(arguments []Argument) (Transformation, error) {
-		key, ok := arguments[0].Value().(int)
+	r.RegisterTransformation(NewBlockInfo("append-note", "Append a note", []ArgumentInfo{}), func(arguments map[string]interface{}) (Transformation, error) {
+		key, ok := arguments["key"].(int)
 		if ok {
 			return &noteAppender{ key: uint8(key) }, nil
 		} else {
 			return nil, InvalidArgumentTypeError
 		}
 	})
-	r.RegisterVisualization(NewBlockInfo("list-notes", "List all notes", []ArgumentInfo{}), func(arguments []Argument) (Visualization, error) {
+	r.RegisterVisualization(NewBlockInfo("list-notes", "List all notes", []ArgumentInfo{}), func(arguments map[string]interface{}) (Visualization, error) {
 		return &noteLister{}, nil
 	})
 
-	r.RegisterSource(NewBlockInfo("error", "Error", []ArgumentInfo{}), func(arguments []Argument) (Source, error) {
+	r.RegisterSource(NewBlockInfo("error", "Error", []ArgumentInfo{}), func(arguments map[string]interface{}) (Source, error) {
 		return &produceError{}, nil
 	})
-	r.RegisterTransformation(NewBlockInfo("error", "Error", []ArgumentInfo{}), func(arguments []Argument) (Transformation, error) {
+	r.RegisterTransformation(NewBlockInfo("error", "Error", []ArgumentInfo{}), func(arguments map[string]interface{}) (Transformation, error) {
 		return &produceError{}, nil
 	})
-	r.RegisterVisualization(NewBlockInfo("error", "Error", []ArgumentInfo{}), func(arguments []Argument) (Visualization, error) {
+	r.RegisterVisualization(NewBlockInfo("error", "Error", []ArgumentInfo{}), func(arguments map[string]interface{}) (Visualization, error) {
 		return &produceError{}, nil
 	})
 
@@ -124,15 +124,15 @@ func createPipeline(creator Creator, sources []string, transformations []string,
 	p := NewPipeline()
 	p.creator = creator
 	for si, source := range sources {
-		p.AddSource(NewBlock(source, fmt.Sprintf("start %d", si), []Argument{}))
+		p.AddSource(NewBlock(source, fmt.Sprintf("start %d", si), make(map[string]interface{})))
 	}
 	for ti, transformation := range transformations {
-		p.AddTransformation(NewBlock(transformation, fmt.Sprintf("transform %d", ti), []Argument{
-			NewArgument("key", keys[ti]),
+		p.AddTransformation(NewBlock(transformation, fmt.Sprintf("transform %d", ti), map[string]interface{}{
+			"key": keys[ti],
 		}))
 	}
 	for vi, visualization := range visualizations {
-		p.AddVisualization(NewBlock(visualization, fmt.Sprintf("visu %d", vi), []Argument{}))
+		p.AddVisualization(NewBlock(visualization, fmt.Sprintf("visu %d", vi), make(map[string]interface{})))
 	}
 	return p
 }
@@ -275,7 +275,7 @@ func TestPerformUnknownFirstTransform(t *testing.T) {
 
 func TestPerformUnknownFirstVisu(t *testing.T) {
 	registrator := mockRegistrator()
-	visu, err := registrator.CreateVisualization("visu-error", []Argument{})
+	visu, err := registrator.CreateVisualization("visu-error", make(map[string]interface{}))
 	assert.Nil(t, visu)
 	assert.NotNil(t, err)
 	pipeline := createPipeline(
@@ -376,7 +376,7 @@ func TestPerformErrorFirstTransformation(t *testing.T) {
 
 func TestPerformErrorFirstVisualization(t *testing.T) {
 	registrator := mockRegistrator()
-	visu, err := registrator.CreateVisualization("visu-error", []Argument{})
+	visu, err := registrator.CreateVisualization("visu-error", make(map[string]interface{}))
 	assert.Nil(t, visu)
 	assert.NotNil(t, err)
 	pipeline := createPipeline(

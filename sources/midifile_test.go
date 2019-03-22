@@ -9,20 +9,22 @@ import (
 )
 
 func TestCreateMidiSourceFromFactory(t *testing.T) {
-	reader, err := blocks.DefaultRegistrator().CreateSource("midi-file", []blocks.Argument{ blocks.NewArgument("filename", "") })
+	reader, err := blocks.DefaultRegistrator().CreateSource("midi-file", map[string]interface{}{
+		"file": "",
+	})
 	assert.NotNil(t, reader)
 	assert.Nil(t, err)
 }
 
 func TestCreateMidiSourceFromFactoryWithoutParams(t *testing.T) {
-	reader, err := blocks.DefaultRegistrator().CreateSource("midi-file", []blocks.Argument{})
+	reader, err := blocks.DefaultRegistrator().CreateSource("midi-file", make(map[string]interface{}))
 	assert.Nil(t, reader)
 	assert.NotNil(t, err)
 }
 
 func TestReadFromFile(t *testing.T) {
-	reader, err := blocks.DefaultRegistrator().CreateSource("midi-file", []blocks.Argument{
-		blocks.NewArgument("filename", "../testdata/c-major.midi"),
+	reader, err := blocks.DefaultRegistrator().CreateSource("midi-file", map[string]interface{}{
+		"file": "../testdata/c-major.midi",
 	})
 	assert.Nil(t, err)
 	assert.NotNil(t, reader)

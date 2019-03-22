@@ -12,13 +12,14 @@ type majorScale struct {
 }
 
 
-func newMajorScale(config []blocks.Argument) (blocks.Source, error) {
-	if len(config) != 1 {
+func newMajorScale(arguments map[string]interface{}) (blocks.Source, error) {
+	baseToneArg, ok := arguments["base-tone"]
+	if !ok {
 		return nil, blocks.MissingArgumentError
 	}
 
 	var baseTone uint8
-	switch value := config[0].Value().(type) {
+	switch value := baseToneArg.(type) {
 	case int:
 		baseTone = uint8(value)
 	case string:

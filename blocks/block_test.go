@@ -8,7 +8,7 @@ import (
 
 
 func TestBlock(t *testing.T) {
-	block := NewBlock("my-name", "My Comment", []Argument{})
+	block := NewBlock("my-name", "My Comment", make(map[string]interface{}))
 	assert.Equal(t, "my-name", block.TypeId())
 	assert.Equal(t, "My Comment", block.Comment())
 }

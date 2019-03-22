@@ -8,7 +8,7 @@ type Transformation interface {
 	Transform(piece *core.Piece) (*core.Piece, error)
 }
 
-type TransformationFactory func([]Argument) (Transformation, error)
+type TransformationFactory func(map[string]interface{}) (Transformation, error)
 
 type transformationType struct {
 	info    BlockInfo

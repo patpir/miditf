@@ -6,14 +6,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func mockVisualizationFactory(config []Argument) (Visualization, error) {
+func mockVisualizationFactory(arguments map[string]interface{}) (Visualization, error) {
 	return nil, nil
 }
 
 
 func TestInvalidVisualizationId(t *testing.T) {
 	r := NewRegistrator()
-	visu, err := r.CreateVisualization("visualization does not exist", []Argument{})
+	visu, err := r.CreateVisualization("visualization does not exist", make(map[string]interface{}))
 	assert.NotNil(t, err)
 	assert.Nil(t, visu)
 }

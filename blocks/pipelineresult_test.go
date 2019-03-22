@@ -9,9 +9,9 @@ import (
 
 
 func TestPipelineResult(t *testing.T) {
-	sourceBlock := NewBlock("source-id", "", []Argument{})
-	transformBlock := NewBlock("transform-id", "", []Argument{})
-	visualizationBlock := NewBlock("visu-id", "", []Argument{})
+	sourceBlock := NewBlock("source-id", "", make(map[string]interface{}))
+	transformBlock := NewBlock("transform-id", "", make(map[string]interface{}))
+	visualizationBlock := NewBlock("visu-id", "", make(map[string]interface{}))
 	pr := PipelineResult{ sourceBlock, []Block{transformBlock}, visualizationBlock, "Output", errors.New("Error") }
 
 	assert.Equal(t, sourceBlock, pr.Source())

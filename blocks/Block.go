@@ -3,17 +3,17 @@ package blocks
 type Block interface {
 	TypeId()     string
 	Comment()    string
-	Arguments()  []Argument
+	Arguments()  map[string]interface{}
 }
 
 type block struct {
 	typeId     string
 	comment    string
-	arguments  []Argument
+	arguments  map[string]interface{}
 }
 
 
-func NewBlock(typeId string, comment string, arguments []Argument) Block {
+func NewBlock(typeId string, comment string, arguments map[string]interface{}) Block {
 	return &block {
 		typeId:     typeId,
 		comment:    comment,
@@ -30,7 +30,7 @@ func (b *block) Comment() string {
 	return b.comment
 }
 
-func (b *block) Arguments() []Argument {
+func (b *block) Arguments() map[string]interface{} {
 	return b.arguments
 }
 

@@ -18,14 +18,15 @@ type midiFileReader struct {
 }
 
 
-func newMidiFileReader(arguments []blocks.Argument) (blocks.Source, error) {
-	if len(arguments) != 1 {
+func newMidiFileReader(arguments map[string]interface{}) (blocks.Source, error) {
+	fileArg, ok := arguments["file"]
+	if !ok {
 		return nil, blocks.MissingArgumentError
 	}
 
 	ms := midiFileReader{}
 
-	switch value := arguments[0].Value().(type) {
+	switch value := fileArg.(type) {
 	case string:
 		ms.filename = value
 		ms.file = nil
@@ -118,7 +119,7 @@ func (mfr *midiFileReader) Piece() (*core.Piece, error) {
 
 func init() {
 	arguments := []blocks.ArgumentInfo{
-		blocks.NewArgumentInfo("filename", "Path to a SMF/MIDI file", false),
+		blocks.NewArgumentInfo("file", "Path to a SMF/MIDI file", false),
 	}
 	info := blocks.NewBlockInfo("midi-file", "Reads a single MIDI file", arguments)
 	blocks.DefaultRegistrator().RegisterSource(info, newMidiFileReader)

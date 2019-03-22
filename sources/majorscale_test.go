@@ -10,19 +10,23 @@ import (
 
 func TestCreateMajorScaleSourceFromFactory(t *testing.T) {
 	// MIDI key 60 stands fo C4
-	src, err := blocks.DefaultRegistrator().CreateSource("major-scale", []blocks.Argument{ blocks.NewArgument("base-tone", "60") })
+	src, err := blocks.DefaultRegistrator().CreateSource("major-scale", map[string]interface{}{
+		"base-tone": 60,
+	})
 	assert.Nil(t, err)
 	assert.NotNil(t, src)
 }
 
 func TestCreateMajorScaleSourceWihoutParams(t *testing.T) {
-	src, err := blocks.DefaultRegistrator().CreateSource("major-scale", []blocks.Argument{})
+	src, err := blocks.DefaultRegistrator().CreateSource("major-scale", make(map[string]interface{}))
 	assert.NotNil(t, err)
 	assert.Nil(t, src)
 }
 
 func TestMajorScaleNotes(t *testing.T) {
-	src, err := blocks.DefaultRegistrator().CreateSource("major-scale", []blocks.Argument{ blocks.NewArgument("base-tone", "60") })
+	src, err := blocks.DefaultRegistrator().CreateSource("major-scale", map[string]interface{}{
+		"base-tone": 60,
+	})
 	assert.Nil(t, err)
 	assert.NotNil(t, src)
 

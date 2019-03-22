@@ -48,7 +48,7 @@ func (r *registrator) RegisterVisualization(info BlockInfo, factory Visualizatio
 	r.visualizationInfos = append(r.visualizationInfos, info)
 }
 
-func (r *registrator) CreateSource(identifier string, argValues []Argument) (Source, error) {
+func (r *registrator) CreateSource(identifier string, argValues map[string]interface{}) (Source, error) {
 	st, ok := r.sources[identifier]
 	if ok {
 		return st.factory(argValues)
@@ -56,7 +56,7 @@ func (r *registrator) CreateSource(identifier string, argValues []Argument) (Sou
 	return nil, errors.New("Source type does not exist")
 }
 
-func (r *registrator) CreateTransformation(identifier string, argValues []Argument) (Transformation, error) {
+func (r *registrator) CreateTransformation(identifier string, argValues map[string]interface{}) (Transformation, error) {
 	tt, ok := r.transformations[identifier]
 	if ok {
 		return tt.factory(argValues)
@@ -65,7 +65,7 @@ func (r *registrator) CreateTransformation(identifier string, argValues []Argume
 }
 
 
-func (r *registrator) CreateVisualization(identifier string, argValues []Argument) (Visualization, error) {
+func (r *registrator) CreateVisualization(identifier string, argValues map[string]interface{}) (Visualization, error) {
 	vt, ok := r.visualizations[identifier]
 	if ok {
 		return vt.factory(argValues)
