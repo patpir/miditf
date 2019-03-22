@@ -4,7 +4,6 @@ import (
 	"testing"
 	"errors"
 	"fmt"
-	"strconv"
 
 	"github.com/stretchr/testify/assert"
 
@@ -97,8 +96,12 @@ func mockRegistrator() Registrator {
 		return &emptyTrackSource{}, nil
 	})
 	r.RegisterTransformation(NewBlockInfo("append-note", "Append a note", []ArgumentInfo{}), func(arguments []Argument) (Transformation, error) {
-		key, err := strconv.Atoi(arguments[0].Value())
-		return &noteAppender{ key: uint8(key) }, err
+		key, ok := arguments[0].Value().(int)
+		if ok {
+			return &noteAppender{ key: uint8(key) }, nil
+		} else {
+			return nil, InvalidArgumentTypeError
+		}
 	})
 	r.RegisterVisualization(NewBlockInfo("list-notes", "List all notes", []ArgumentInfo{}), func(arguments []Argument) (Visualization, error) {
 		return &noteLister{}, nil
@@ -125,7 +128,7 @@ func createPipeline(creator Creator, sources []string, transformations []string,
 	}
 	for ti, transformation := range transformations {
 		p.AddTransformation(NewBlock(transformation, fmt.Sprintf("transform %d", ti), []Argument{
-			NewArgument("key", strconv.Itoa(keys[ti])),
+			NewArgument("key", keys[ti]),
 		}))
 	}
 	for vi, visualization := range visualizations {

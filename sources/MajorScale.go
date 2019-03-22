@@ -1,7 +1,6 @@
 package sources
 
 import (
-	"errors"
 	"strconv"
 
 	"github.com/patpir/miditf/core"
@@ -15,12 +14,21 @@ type majorScale struct {
 
 func newMajorScale(config []blocks.Argument) (blocks.Source, error) {
 	if len(config) != 1 {
-		return nil, errors.New("Invalid number of arguments")
+		return nil, blocks.MissingArgumentError
 	}
 
-	baseTone, err := strconv.Atoi(config[0].Value())
-	if err != nil {
-		return nil, err
+	var baseTone uint8
+	switch value := config[0].Value().(type) {
+	case int:
+		baseTone = uint8(value)
+	case string:
+		baseToneInt, err := strconv.Atoi(value)
+		if err != nil {
+			return nil, err
+		}
+		baseTone = uint8(baseToneInt)
+	default:
+		return nil, blocks.InvalidArgumentTypeError
 	}
 
 	scale := majorScale{}

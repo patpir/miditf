@@ -1,7 +1,7 @@
 package sources
 
 import (
-	"errors"
+	"io"
 	"os"
 
 	"github.com/gomidi/midi/midimessage/channel"
@@ -13,22 +13,33 @@ import (
 )
 
 type midiFileReader struct {
-	filename string
+	filename  string
+	file      io.Reader
 }
 
 
 func newMidiFileReader(arguments []blocks.Argument) (blocks.Source, error) {
 	if len(arguments) != 1 {
-		return nil, errors.New("Invalid number of arguments")
+		return nil, blocks.MissingArgumentError
 	}
 
 	ms := midiFileReader{}
-	ms.filename = arguments[0].Value()
+
+	switch value := arguments[0].Value().(type) {
+	case string:
+		ms.filename = value
+		ms.file = nil
+	case io.Reader:
+		ms.file = value
+		ms.filename = ""
+	default:
+		return nil, blocks.InvalidArgumentTypeError
+	}
 	return &ms, nil
 }
 
 
-func (mfr *midiFileReader) Piece() (*core.Piece, error) {
+func readPieceFromMidiFileReader(file io.Reader) (*core.Piece, error) {
 	result := core.NewPiece()
 
 	// 16 MIDI channels and 128 MIDI keys
@@ -38,15 +49,10 @@ func (mfr *midiFileReader) Piece() (*core.Piece, error) {
 	trackId := int16(-1)
 	var currentTrack *core.Track = nil
 
-	f, err := os.Open(mfr.filename)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
 
-	rd := smfreader.New(f)
+	rd := smfreader.New(file)
 
-	err = rd.ReadHeader()
+	err := rd.ReadHeader()
 	if err != nil {
 		return nil, err
 	}
@@ -93,6 +99,20 @@ func (mfr *midiFileReader) Piece() (*core.Piece, error) {
 	}
 
 	return result, nil
+}
+
+func (mfr *midiFileReader) Piece() (*core.Piece, error) {
+	if mfr.file != nil {
+		return readPieceFromMidiFileReader(mfr.file)
+	} else {
+		f, err := os.Open(mfr.filename)
+		if err != nil {
+			return nil, err
+		}
+		defer f.Close()
+
+		return readPieceFromMidiFileReader(f)
+	}
 }
 
 
