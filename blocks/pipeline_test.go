@@ -153,11 +153,11 @@ func TestPerformSuccessMulti(t *testing.T) {
 	count := 0
 	for result := range ch {
 		count += 1
-		assert.NotNil(t, result.source)
-		assert.Equal(t, 2, len(result.transformations))
-		assert.NotNil(t, result.visualization)
-		assert.Equal(t, "Track  0: 60 69\n", result.output)
-		assert.Nil(t, result.err)
+		assert.NotNil(t, result.Source)
+		assert.Equal(t, 2, len(result.Transformations))
+		assert.NotNil(t, result.Visualization)
+		assert.Equal(t, "Track  0: 60 69\n", result.Output)
+		assert.Nil(t, result.Err)
 	}
 	assert.Equal(t, 4, count)
 }
@@ -178,11 +178,11 @@ func TestPerformWithoutTransform(t *testing.T) {
 	count := 0
 	for result := range ch {
 		count += 1
-		assert.NotNil(t, result.source)
-		assert.Equal(t, 0, len(result.transformations))
-		assert.NotNil(t, result.visualization)
-		assert.Equal(t, "Track  0:\n", result.output)
-		assert.Nil(t, result.err)
+		assert.NotNil(t, result.Source)
+		assert.Equal(t, 0, len(result.Transformations))
+		assert.NotNil(t, result.Visualization)
+		assert.Equal(t, "Track  0:\n", result.Output)
+		assert.Nil(t, result.Err)
 	}
 	assert.Equal(t, 1, count)
 }
@@ -203,11 +203,11 @@ func TestPerformUnknownSingleSource(t *testing.T) {
 	count := 0
 	for result := range ch {
 		count += 1
-		assert.NotNil(t, result.source)
-		assert.NotNil(t, result.err)
-		assert.Equal(t, 0, len(result.transformations))
-		assert.Nil(t, result.visualization)
-		assert.Equal(t, "", result.output)
+		assert.NotNil(t, result.Source)
+		assert.NotNil(t, result.Err)
+		assert.Equal(t, 0, len(result.Transformations))
+		assert.Nil(t, result.Visualization)
+		assert.Equal(t, "", result.Output)
 	}
 	assert.Equal(t, 1, count)
 }
@@ -229,19 +229,19 @@ func TestPerformUnknownFirstSource(t *testing.T) {
 	errorCount := 0
 	for result := range ch {
 		count += 1
-		if result.err != nil {
+		if result.Err != nil {
 			errorCount += 1
-			assert.NotNil(t, result.source)
-			assert.NotNil(t, result.err)
-			assert.Equal(t, 0, len(result.transformations))
-			assert.Nil(t, result.visualization)
-			assert.Equal(t, "", result.output)
+			assert.NotNil(t, result.Source)
+			assert.NotNil(t, result.Err)
+			assert.Equal(t, 0, len(result.Transformations))
+			assert.Nil(t, result.Visualization)
+			assert.Equal(t, "", result.Output)
 		} else {
-			assert.NotNil(t, result.source)
-			assert.Equal(t, 2, len(result.transformations))
-			assert.NotNil(t, result.visualization)
-			assert.Equal(t, "Track  0: 60 69\n", result.output)
-			assert.Nil(t, result.err)
+			assert.NotNil(t, result.Source)
+			assert.Equal(t, 2, len(result.Transformations))
+			assert.NotNil(t, result.Visualization)
+			assert.Equal(t, "Track  0: 60 69\n", result.Output)
+			assert.Nil(t, result.Err)
 		}
 	}
 	assert.Equal(t, 1, errorCount)
@@ -264,11 +264,11 @@ func TestPerformUnknownFirstTransform(t *testing.T) {
 	count := 0
 	for result := range ch {
 		count += 1
-		assert.NotNil(t, result.source)
-		assert.Equal(t, 1, len(result.transformations))
-		assert.NotNil(t, result.err)
-		assert.Nil(t, result.visualization)
-		assert.Equal(t, "", result.output)
+		assert.NotNil(t, result.Source)
+		assert.Equal(t, 1, len(result.Transformations))
+		assert.NotNil(t, result.Err)
+		assert.Nil(t, result.Visualization)
+		assert.Equal(t, "", result.Output)
 	}
 	assert.Equal(t, 2, count)
 }
@@ -293,19 +293,19 @@ func TestPerformUnknownFirstVisu(t *testing.T) {
 	errorCount := 0
 	for result := range ch {
 		count += 1
-		if result.err != nil {
+		if result.Err != nil {
 			errorCount += 1
-			assert.NotNil(t, result.source)
-			assert.Equal(t, 2, len(result.transformations))
-			assert.NotNil(t, result.visualization)
-			assert.NotNil(t, result.err)
-			assert.Equal(t, "", result.output)
+			assert.NotNil(t, result.Source)
+			assert.Equal(t, 2, len(result.Transformations))
+			assert.NotNil(t, result.Visualization)
+			assert.NotNil(t, result.Err)
+			assert.Equal(t, "", result.Output)
 		} else {
-			assert.NotNil(t, result.source)
-			assert.Equal(t, 2, len(result.transformations))
-			assert.NotNil(t, result.visualization)
-			assert.Equal(t, "Track  0: 60 69\n", result.output)
-			assert.Nil(t, result.err)
+			assert.NotNil(t, result.Source)
+			assert.Equal(t, 2, len(result.Transformations))
+			assert.NotNil(t, result.Visualization)
+			assert.Equal(t, "Track  0: 60 69\n", result.Output)
+			assert.Nil(t, result.Err)
 		}
 	}
 	assert.Equal(t, 2, errorCount)
@@ -330,19 +330,19 @@ func TestPerformErrorFirstSource(t *testing.T) {
 	errorCount := 0
 	for result := range ch {
 		count += 1
-		if result.err != nil {
+		if result.Err != nil {
 			errorCount += 1
-			assert.NotNil(t, result.source)
-			assert.NotNil(t, result.err)
-			assert.Equal(t, 0, len(result.transformations))
-			assert.Nil(t, result.visualization)
-			assert.Equal(t, "", result.output)
+			assert.NotNil(t, result.Source)
+			assert.NotNil(t, result.Err)
+			assert.Equal(t, 0, len(result.Transformations))
+			assert.Nil(t, result.Visualization)
+			assert.Equal(t, "", result.Output)
 		} else {
-			assert.NotNil(t, result.source)
-			assert.Equal(t, 2, len(result.transformations))
-			assert.NotNil(t, result.visualization)
-			assert.Equal(t, "Track  0: 60 69\n", result.output)
-			assert.Nil(t, result.err)
+			assert.NotNil(t, result.Source)
+			assert.Equal(t, 2, len(result.Transformations))
+			assert.NotNil(t, result.Visualization)
+			assert.Equal(t, "Track  0: 60 69\n", result.Output)
+			assert.Nil(t, result.Err)
 		}
 	}
 	assert.Equal(t, 1, errorCount)
@@ -365,11 +365,11 @@ func TestPerformErrorFirstTransformation(t *testing.T) {
 	count := 0
 	for result := range ch {
 		count += 1
-		assert.NotNil(t, result.source)
-		assert.Equal(t, 1, len(result.transformations))
-		assert.NotNil(t, result.err)
-		assert.Nil(t, result.visualization)
-		assert.Equal(t, "", result.output)
+		assert.NotNil(t, result.Source)
+		assert.Equal(t, 1, len(result.Transformations))
+		assert.NotNil(t, result.Err)
+		assert.Nil(t, result.Visualization)
+		assert.Equal(t, "", result.Output)
 	}
 	assert.Equal(t, 2, count)
 }
@@ -394,19 +394,19 @@ func TestPerformErrorFirstVisualization(t *testing.T) {
 	errorCount := 0
 	for result := range ch {
 		count += 1
-		if result.err != nil {
+		if result.Err != nil {
 			errorCount += 1
-			assert.NotNil(t, result.source)
-			assert.Equal(t, 2, len(result.transformations))
-			assert.NotNil(t, result.visualization)
-			assert.NotNil(t, result.err)
-			assert.Equal(t, "", result.output)
+			assert.NotNil(t, result.Source)
+			assert.Equal(t, 2, len(result.Transformations))
+			assert.NotNil(t, result.Visualization)
+			assert.NotNil(t, result.Err)
+			assert.Equal(t, "", result.Output)
 		} else {
-			assert.NotNil(t, result.source)
-			assert.Equal(t, 2, len(result.transformations))
-			assert.NotNil(t, result.visualization)
-			assert.Equal(t, "Track  0: 60 69\n", result.output)
-			assert.Nil(t, result.err)
+			assert.NotNil(t, result.Source)
+			assert.Equal(t, 2, len(result.Transformations))
+			assert.NotNil(t, result.Visualization)
+			assert.Equal(t, "Track  0: 60 69\n", result.Output)
+			assert.Nil(t, result.Err)
 		}
 	}
 	assert.Equal(t, 2, errorCount)

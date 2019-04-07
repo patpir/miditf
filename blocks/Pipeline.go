@@ -63,11 +63,11 @@ func (p *Pipeline) Perform(c chan PipelineResult) {
 
 			if transformed.err != nil {
 				result := PipelineResult{
-					source: transformed.source,
-					transformations: transformed.transformations,
-					visualization: nil,
-					output: "",
-					err: transformed.err,
+					Source: transformed.source,
+					Transformations: transformed.transformations,
+					Visualization: nil,
+					Output: "",
+					Err: transformed.err,
 				}
 				c <- result
 			} else {
@@ -119,18 +119,18 @@ func transformSingleSource(creator Creator, source Block, transformations []Bloc
 
 func visualizeTransformationResult(creator Creator, tfResult intermediateResult, visualization Block) PipelineResult {
 	result := PipelineResult{
-		source: tfResult.source,
-		transformations: tfResult.transformations,
-		visualization: visualization,
-		output: "",
-		err: nil,
+		Source: tfResult.source,
+		Transformations: tfResult.transformations,
+		Visualization: visualization,
+		Output: "",
+		Err: nil,
 	}
 
 	visu, err := creator.CreateVisualization(visualization.TypeId(), visualization.Arguments())
 	if err != nil {
-		result.err = err
+		result.Err = err
 	} else {
-		result.output, result.err = visu.Visualize(tfResult.piece)
+		result.Output, result.Err = visu.Visualize(tfResult.piece)
 	}
 
 	return result
